@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PhishGuard AI — Advanced AI-powered phishing website detector. Scan URLs instantly for cyber threats, malicious links, and phishing attacks.">
+    <meta name="keywords" content="phishing detector, cyber security, URL scanner, malware, threat detection">
+    <title>PhishGuard AI — Phishing Website Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Matrix Rain Canvas -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <span class="nav-logo">🛡️</span>
+            <span class="nav-title">PhishGuard<span class="accent">AI</span></span>
+            <span class="plan-badge-nav" id="plan-badge-nav">BASIC</span>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="#scanner">Scanner</a>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#history">History</a>
+            <a href="#tips">Safety Tips</a>
+        </div>
+        <div class="nav-actions">
+            <span class="scan-counter" id="scan-counter" title="Scans remaining today">5/5 Scans</span>
+            <button class="btn-plans" id="btn-plans" onclick="openProModal()">⚡ Plans</button>
+            <button class="btn-theme" id="btn-theme" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+        </div>
+        <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()">☰</button>
+    </nav>
+
+    <!-- Mobile Nav Overlay -->
+    <div class="mobile-nav" id="mobile-nav">
+        <a href="#scanner" onclick="toggleMobileNav()">🔍 Scanner</a>
+        <a href="#dashboard" onclick="toggleMobileNav()">📊 Dashboard</a>
+        <a href="#history" onclick="toggleMobileNav()">📜 History</a>
+        <a href="#tips" onclick="toggleMobileNav()">🔐 Safety Tips</a>
+        <button class="btn-plans mobile" onclick="openProModal(); toggleMobileNav()">⚡ Switch Plan</button>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-particles"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                🔒 Trusted Cyber Security Tool
+            </div>
+            <h1>AI Phishing<br><span class="glow-text">Website Detector</span></h1>
+            <p class="hero-subtitle">Precision heuristic engine with 22 detection checks to protect you from phishing websites, typosquatting, subdomain impersonation, and brand spoofing — in real time.</p>
+            <div class="hero-stats">
+                <div class="stat-pill">
+                    <span class="stat-icon">🔍</span>
+                    <span class="stat-num" id="total-scans-hero">0</span>
+                    <span>Scans</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">🚨</span>
+                    <span class="stat-num" id="threats-hero">0</span>
+                    <span>Threats Found</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="stat-icon">🧠</span>
+                    <span>22 Checks</span>
+                </div>
+            </div>
+            <a href="#scanner" class="hero-cta">
+                Start Scanning →
+            </a>
+        </div>
+    </section>
+
+    <!-- Scanner Section -->
+    <section class="scanner-section" id="scanner">
+        <div class="section-header">
+            <h2>🔍 URL Scanner</h2>
+            <p>Paste any URL below to analyze it for phishing threats</p>
+        </div>
+        <div class="scanner-card glass-card">
+            <div class="scanner-status">
+                <span class="status-dot active" id="status-dot"></span>
+                <span id="status-text">Firewall Protection Active</span>
+            </div>
+            <div class="scanner-input-group">
+                <div class="input-wrapper">
+                    <span class="input-icon">🔗</span>
+                    <input type="text" id="url-input" placeholder="Enter website URL to scan (e.g., https://example.com)" autocomplete="off" spellcheck="false">
+                    <button class="btn-clear" id="btn-clear" onclick="clearInput()" title="Clear">✕</button>
+                </div>
+                <button class="btn-scan" id="btn-scan" onclick="scanURL()">
+                    <span class="btn-text" id="btn-scan-text">🔍 SCAN NOW</span>
+                </button>
+            </div>
+
+            <!-- Scan Progress -->
+            <div class="scan-progress" id="scan-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-steps" id="progress-steps">
+                    <span class="step active">Initializing...</span>
+                </div>
+            </div>
+
+            <!-- Scan Results -->
+            <div class="scan-results" id="scan-results">
+                <div class="result-header" id="result-header">
+                    <div class="result-icon" id="result-icon">✅</div>
+                    <div class="result-info">
+                        <h3 id="result-verdict">Safe Website</h3>
+                        <p class="result-url" id="result-url">https://example.com</p>
+                    </div>
+                    <div class="result-score-circle" id="result-score-circle">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="score-bg" cx="50" cy="50" r="42"/>
+                            <circle class="score-ring" id="score-ring" cx="50" cy="50" r="42"/>
+                        </svg>
+                        <div class="score-value" id="score-value">0</div>
+                    </div>
+                </div>
+
+                <!-- Risk Meter -->
+                <div class="risk-meter-container">
+                    <div class="risk-labels">
+                        <span>Safe</span>
+                        <span>Low</span>
+                        <span>Medium</span>
+                        <span>High</span>
+                        <span>Critical</span>
+                    </div>
+                    <div class="risk-meter">
+                        <div class="risk-fill" id="risk-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Detection Details -->
+                <div class="result-details" id="result-details">
+                    <!-- Dynamically filled -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="result-actions">
+                    <button class="btn-action" onclick="exportReport()" id="btn-export">
+                        <span>📄</span> Export Report
+                    </button>
+                    <button class="btn-action" onclick="copyReport()" id="btn-copy">
+                        <span>📋</span> Copy Report
+                    </button>
+                    <button class="btn-action primary" onclick="scanAnother()">
+                        <span>🔄</span> Scan Another
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bulk Scanner (Pro) -->
+    <section class="bulk-section" id="bulk-section">
+        <div class="section-header">
+            <h2>📦 Bulk URL Scanner <span class="pro-badge">PRO</span></h2>
+            <p>Scan multiple URLs at once — paste one URL per line</p>
+        </div>
+        <div class="bulk-card glass-card">
+            <div class="bulk-lock" id="bulk-lock">
+                <span class="lock-icon">🔒</span>
+                <p>Bulk scanning requires <strong>Pro</strong> or <strong>Advanced</strong> plan</p>
+                <button class="btn-plans" onclick="openProModal()">⚡ Upgrade Plan</button>
+            </div>
+            <div class="bulk-content" id="bulk-content" style="display:none">
+                <textarea id="bulk-urls" placeholder="https://example1.com&#10;https://example2.com&#10;https://suspicious-site.xyz&#10;&#10;Paste up to 20 URLs, one per line" rows="6" spellcheck="false"></textarea>
+                <button class="btn-scan bulk-btn" onclick="bulkScan()">🚀 Scan All URLs</button>
+                <div class="bulk-results" id="bulk-results"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard -->
+    <section class="dashboard-section" id="dashboard">
+        <div class="section-header">
+            <h2>📊 Threat Intelligence Dashboard</h2>
+            <p>Your personal security analytics at a glance</p>
+        </div>
+        <div class="dashboard-grid">
+            <div class="dash-card glass-card">
+                <div class="dash-icon">🔍</div>
+                <div class="dash-value" id="dash-total">0</div>
+                <div class="dash-label">Total Scans</div>
+                <div class="dash-bar">
+                    <div class="dash-bar-fill" id="dash-bar-total"></div>
+                </div>
+            </div>
+            <div class="dash-card glass-card safe">
+                <div class="dash-icon">✅</div>
+                <div class="dash-value" id="dash-safe">0</div>
+                <div class="dash-label">Safe URLs</div>
+                <div class="dash-bar">
+                    <div class="dash-bar-fill safe" id="dash-bar-safe"></div>
+                </div>
+            </div>
+            <div class="dash-card glass-card warning">
+                <div class="dash-icon">⚠️</div>
+                <div class="dash-value" id="dash-suspicious">0</div>
+                <div class="dash-label">Suspicious</div>
+                <div class="dash-bar">
+                    <div class="dash-bar-fill warning" id="dash-bar-suspicious"></div>
+                </div>
+            </div>
+            <div class="dash-card glass-card danger">
+                <div class="dash-icon">🚨</div>
+                <div class="dash-value" id="dash-dangerous">0</div>
+                <div class="dash-label">Dangerous</div>
+                <div class="dash-bar">
+                    <div class="dash-bar-fill danger" id="dash-bar-dangerous"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scan History -->
+    <section class="history-section" id="history">
+        <div class="section-header">
+            <h2>📜 Scan History</h2>
+            <p>Your recent URL scans</p>
+            <button class="btn-action small" onclick="clearHistory()" id="btn-clear-history">🗑️ Clear All</button>
+        </div>
+        <div class="history-list" id="history-list">
+            <div class="empty-state" id="empty-state">
+                <span class="empty-icon">🔍</span>
+                <p>No scans yet. Start by scanning a URL above!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Safety Tips -->
+    <section class="tips-section" id="tips">
+        <div class="section-header">
+            <h2>🔐 Cyber Safety Tips</h2>
+            <p>Stay protected online with these essential guidelines</p>
+        </div>
+        <div class="tips-grid">
+            <div class="tip-card glass-card">
+                <div class="tip-icon">🔗</div>
+                <h4>Check URLs Carefully</h4>
+                <p>Always verify the URL before clicking. Look for misspellings, extra characters, and suspicious domains that imitate real websites.</p>
+            </div>
+            <div class="tip-card glass-card">
+                <div class="tip-icon">🔒</div>
+                <h4>Look for HTTPS</h4>
+                <p>Ensure websites use HTTPS encryption before entering any sensitive information like passwords or credit card details.</p>
+            </div>
+            <div class="tip-card glass-card">
+                <div class="tip-icon">🔑</div>
+                <h4>Strong Passwords</h4>
+                <p>Use unique, complex passwords for each account. Mix uppercase, lowercase, numbers, and special characters. Consider a password manager.</p>
+            </div>
+            <div class="tip-card glass-card">
+                <div class="tip-icon">📱</div>
+                <h4>Enable 2FA</h4>
+                <p>Two-factor authentication adds an extra layer of security. Even if your password is compromised, your account stays protected.</p>
+            </div>
+            <div class="tip-card glass-card">
+                <div class="tip-icon">🚫</div>
+                <h4>Never Share OTPs</h4>
+                <p>No legitimate company will ever ask for your OTP, PIN, or password via email, phone, or SMS. Report such attempts immediately.</p>
+            </div>
+            <div class="tip-card glass-card">
+                <div class="tip-icon">📧</div>
+                <h4>Verify Email Senders</h4>
+                <p>Check email sender addresses carefully. Phishers use look-alike domains like "goog1e.com" or "amaz0n.com" to trick you.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans Modal -->
+    <div class="modal-overlay" id="pro-modal">
+        <div class="modal modal-wide glass-card">
+            <button class="modal-close" onclick="closeProModal()" title="Close">✕</button>
+            <div class="modal-header">
+                <span class="modal-icon">⚡</span>
+                <h2>Choose Your <span class="glow-text">PhishGuard Plan</span></h2>
+                <p>Select the plan that fits your security needs — switch anytime</p>
+                <div class="current-plan-badge" id="current-plan-badge">Current: <strong>Basic</strong></div>
+            </div>
+            <div class="pricing-grid three-col">
+                <!-- Basic (Free) -->
+                <div class="price-card" id="price-basic">
+                    <div class="price-tier">Basic</div>
+                    <div class="price-amount">Free</div>
+                    <div class="price-tagline">Get started for free</div>
+                    <ul class="price-features">
+                        <li>✅ 5 Scans / Day</li>
+                        <li>✅ Basic Threat Summary</li>
+                        <li>✅ 5 History Items</li>
+                        <li>❌ Bulk URL Scanner</li>
+                        <li>❌ Export Reports</li>
+                        <li>❌ API Access</li>
+                    </ul>
+                    <button class="btn-pro-buy" id="btn-activate-basic" onclick="switchPlan('basic')">Switch to Basic</button>
+                </div>
+                <!-- Pro -->
+                <div class="price-card featured" id="price-pro">
+                    <div class="price-badge">🔥 Popular</div>
+                    <div class="price-tier">Pro</div>
+                    <div class="price-amount">₹199<span>/mo</span></div>
+                    <div class="price-tagline">For power users</div>
+                    <ul class="price-features">
+                        <li>✅ 25 Scans / Day</li>
+                        <li>✅ Full Threat Details</li>
+                        <li>✅ Unlimited History</li>
+                        <li>✅ Bulk URL Scanner</li>
+                        <li>✅ Export Reports</li>
+                        <li>❌ API Access</li>
+                    </ul>
+                    <button class="btn-pro-buy featured" id="btn-activate-pro" onclick="switchPlan('pro')">Get Pro</button>
+                </div>
+                <!-- Advanced -->
+                <div class="price-card" id="price-advanced">
+                    <div class="price-badge advance-badge">🏆 Best Value</div>
+                    <div class="price-tier">Advanced</div>
+                    <div class="price-amount">₹499<span>/mo</span></div>
+                    <div class="price-savings">Save ₹1,389/yr with annual!</div>
+                    <ul class="price-features">
+                        <li>✅ Unlimited Scans</li>
+                        <li>✅ Full Threat Details</li>
+                        <li>✅ Unlimited History</li>
+                        <li>✅ Bulk Scanner (50 URLs)</li>
+                        <li>✅ Export & Copy Reports</li>
+                        <li>✅ API Access & Analytics</li>
+                    </ul>
+                    <button class="btn-pro-buy" id="btn-activate-advanced" onclick="switchPlan('advanced')">Get Advanced</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="footer-logo">🛡️ PhishGuard AI</span>
+                <p>Advanced Phishing Detection System powered by heuristic analysis.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="#scanner">URL Scanner</a>
+                <a href="#dashboard">Dashboard</a>
+                <a href="#history">Scan History</a>
+                <a href="#tips">Safety Tips</a>
+            </div>
+            <div class="footer-links">
+                <h4>Features</h4>
+                <a href="#scanner">Single URL Scan</a>
+                <a href="#bulk-section">Bulk Scanner</a>
+                <a href="#" onclick="openProModal(); return false;">Pro Upgrade</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 PhishGuard AI — All rights reserved. Made with ❤️ for Cyber Security.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
